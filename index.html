@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Jetzibeth Design </title>
+    <title>Jetzibeth Design OS</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
     <style>
@@ -12,76 +12,78 @@
             --secondary: #7000ff;
             --bg: #050505;
             --glass: rgba(255, 255, 255, 0.05);
+            --danger: #ff4444;
         }
 
         body {
             margin: 0;
+            padding: 0;
             height: 100vh;
+            background: #000;
+            font-family: 'Orbitron', sans-serif;
+            color: white;
             display: flex;
             align-items: center;
             justify-content: center;
-            background: #000;
-            font-family: 'Orbitron', sans-serif;
             overflow: hidden;
-            color: white;
-            position: fixed;
-            width: 100%;
+            touch-action: none;
         }
 
         .grid-bg {
             position: absolute;
             inset: 0;
             background-image: 
-                linear-gradient(rgba(0, 242, 255, 0.05) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0, 242, 255, 0.05) 1px, transparent 1px);
+                linear-gradient(rgba(0, 242, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 242, 255, 0.03) 1px, transparent 1px);
             background-size: 30px 30px;
             z-index: -1;
         }
 
         .main-container {
             background: var(--glass);
-            backdrop-filter: blur(30px);
-            -webkit-backdrop-filter: blur(30px);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 32px;
-            padding: 20px;
-            box-shadow: 0 0 60px rgba(0, 242, 255, 0.15);
-            width: 96vw;
-            max-width: 1100px;
+            border-radius: 24px;
+            padding: 15px;
+            width: 95vw;
+            max-width: 1000px;
             display: flex;
             flex-direction: column;
             gap: 12px;
+            box-shadow: 0 0 50px rgba(0, 242, 255, 0.1);
         }
 
+        /* Toolbar Responsive */
         .toolbar {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
             flex-wrap: wrap;
             gap: 8px;
+            justify-content: space-between;
+            align-items: center;
         }
 
         .tool-group {
             display: flex;
             background: rgba(0,0,0,0.6);
-            padding: 6px;
-            border-radius: 16px;
+            padding: 4px;
+            border-radius: 12px;
             border: 1px solid rgba(255,255,255,0.1);
-            gap: 4px;
+            gap: 2px;
         }
 
         .tool-btn {
             background: transparent;
             border: none;
-            color: #666;
-            width: 42px;
-            height: 42px;
-            border-radius: 12px;
+            color: #777;
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
             cursor: pointer;
-            transition: 0.2s;
+            transition: 0.3s;
             display: grid;
             place-items: center;
-            font-size: 18px;
+            font-size: 16px;
         }
 
         .tool-btn.active {
@@ -92,52 +94,58 @@
 
         #signature-pad {
             background: #000;
-            border-radius: 24px;
+            border-radius: 16px;
             cursor: crosshair;
             width: 100%;
-            height: 55vh;
-            border: 2px solid rgba(255,255,255,0.05);
+            height: 60vh; /* Altura dinámica */
+            border: 1px solid rgba(255,255,255,0.05);
             touch-action: none;
         }
 
         .btn-action {
             border: none;
-            padding: 12px 20px;
-            border-radius: 14px;
+            padding: 10px 15px;
+            border-radius: 10px;
             cursor: pointer;
             font-weight: bold;
+            font-size: 10px;
+            text-transform: uppercase;
             display: flex;
             align-items: center;
-            gap: 8px;
-            font-size: 11px;
-            text-transform: uppercase;
+            gap: 6px;
         }
 
+        .btn-trash { background: rgba(255, 0, 0, 0.1); color: var(--danger); border: 1px solid var(--danger); }
         .btn-export { background: linear-gradient(45deg, var(--primary), var(--secondary)); color: white; }
-        .btn-trash { background: rgba(255, 0, 0, 0.15); color: #ff4444; border: 1px solid rgba(255,0,0,0.2); }
-        .btn-trash:hover { background: #ff0000; color: white; }
 
         #sticker-menu {
             display: none;
             position: absolute;
-            background: rgba(5, 5, 5, 0.98);
+            background: rgba(10, 10, 10, 0.95);
             border: 1px solid var(--primary);
             padding: 10px;
-            border-radius: 20px;
+            border-radius: 15px;
             grid-template-columns: repeat(4, 1fr);
             gap: 8px;
             z-index: 1000;
+        }
+
+        /* Ajustes para móviles pequeños */
+        @media (max-width: 600px) {
+            .tool-btn { width: 35px; height: 35px; font-size: 14px; }
+            #signature-pad { height: 50vh; }
+            .btn-action span { display: none; } /* Ocultar texto en botones de acción */
         }
     </style>
 </head>
 <body>
 
-    <div class="grid-bg" id="grid"></div>
+    <div class="grid-bg"></div>
 
     <div class="main-container">
         <div class="toolbar">
             <div class="tool-group">
-                <button class="tool-btn active" onclick="setTool('pen')" id="btn-pen"><i class="fas fa-pen-fancy"></i></button>
+                <button class="tool-btn active" onclick="setTool('pen')" id="btn-pen"><i class="fas fa-pen-nib"></i></button>
                 <button class="tool-btn" onclick="setTool('eraser')" id="btn-eraser"><i class="fas fa-eraser"></i></button>
                 <button class="tool-btn" onclick="setTool('rect')" id="btn-rect"><i class="fas fa-vector-square"></i></button>
                 <button class="tool-btn" onclick="setTool('circle')" id="btn-circle"><i class="fas fa-circle"></i></button>
@@ -145,17 +153,17 @@
             </div>
 
             <div class="tool-group">
-                <button class="tool-btn" onclick="startVoiceRecognition()" title="Dictar Nota"><i class="fas fa-microphone"></i></button>
+                <button class="tool-btn" onclick="handleVoiceInput()" title="Voz o Texto"><i class="fas fa-microphone"></i></button>
                 <button class="tool-btn" onclick="toggleMirror()" id="btn-mirror"><i class="fas fa-arrows-left-right"></i></button>
                 <button class="tool-btn" onclick="toggleBg()" id="btn-bg" style="color:#fff;"><i class="fas fa-fill-drip"></i></button>
-                <input type="color" id="colorPicker" value="#00f2ff" style="width:30px; height:30px; border:none; background:none; cursor:pointer;">
-                <input type="range" id="lineWidth" min="1" max="60" value="4" style="width: 50px;">
+                <input type="color" id="colorPicker" value="#00f2ff" style="width:25px; border:none; background:none;">
+                <input type="range" id="lineWidth" min="1" max="50" value="4" style="width: 40px;">
             </div>
-            
-            <div style="display:flex; gap:6px;">
-                <button class="tool-btn" style="background:#111; color:white;" onclick="undo()"><i class="fas fa-rotate-left"></i></button>
-                <button class="btn-action btn-trash" onclick="clearCanvas()"><i class="fas fa-trash-can"></i> Limpiar</button>
-                <button class="btn-action btn-export" onclick="handleExport()"><i class="fas fa-shuttle-space"></i> Exportar</button>
+
+            <div style="display:flex; gap:5px;">
+                <button class="tool-btn" style="background:rgba(255,255,255,0.05); color:white;" onclick="undo()"><i class="fas fa-undo"></i></button>
+                <button class="btn-action btn-trash" onclick="clearCanvas()"><i class="fas fa-trash-can"></i><span>Borrar</span></button>
+                <button class="btn-action btn-export" onclick="handleExport()"><i class="fas fa-download"></i><span>Guardar</span></button>
             </div>
         </div>
 
@@ -167,9 +175,9 @@
             <button class="tool-btn" onclick="selectSticker('fa-react')"><i class="fab fa-react"></i></button>
             <button class="tool-btn" onclick="selectSticker('fa-android')"><i class="fab fa-android"></i></button>
         </div>
-        
-        <p style="text-align: center; font-size: 10px; color: var(--primary); letter-spacing: 3px; margin: 0;">
-            JETZIBETH DESIGN OS // <span id="status">putos</span>
+
+        <p style="text-align: center; font-size: 10px; color: var(--primary); opacity: 0.6; margin: 0;">
+            JETZIBETH DESIGN // <span id="status">ESTADO: LISTO</span>
         </p>
     </div>
 
@@ -178,7 +186,8 @@
         const ctx = canvas.getContext('2d', { willReadFrequently: true });
         const colorPicker = document.getElementById('colorPicker');
         const lineWidth = document.getElementById('lineWidth');
-        
+        const status = document.getElementById('status');
+
         let drawing = false;
         let currentTool = 'pen';
         let isDarkBg = true;
@@ -188,34 +197,89 @@
         let snapshot = null;
         let selectedSticker = null;
 
+        // --- INICIALIZACIÓN ---
         function fillBg() {
             ctx.save();
             ctx.globalCompositeOperation = 'destination-over';
             ctx.fillStyle = isDarkBg ? "#000000" : "#ffffff";
             ctx.fillRect(0, 0, canvas.width, canvas.height);
             ctx.restore();
-            canvas.style.background = isDarkBg ? "#000" : "#fff";
+            canvas.style.backgroundColor = isDarkBg ? "#000" : "#fff";
         }
 
         function resizeCanvas() {
             const rect = canvas.getBoundingClientRect();
             const ratio = window.devicePixelRatio || 1;
+            const currentImg = history.length > 0 ? ctx.getImageData(0, 0, canvas.width, canvas.height) : null;
+            
             canvas.width = rect.width * ratio;
             canvas.height = rect.height * ratio;
             ctx.scale(ratio, ratio);
             ctx.lineCap = 'round';
             ctx.lineJoin = 'round';
+            
             fillBg();
+            if(currentImg) ctx.putImageData(currentImg, 0, 0);
         }
 
         window.addEventListener('resize', resizeCanvas);
         resizeCanvas();
 
-        function toggleBg() {
-            isDarkBg = !isDarkBg;
-            const currentImg = ctx.getImageData(0, 0, canvas.width, canvas.height);
-            fillBg();
-            ctx.putImageData(currentImg, 0, 0);
+        // --- BOTÓN LIMPIAR (CORREGIDO) ---
+        function clearCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            fillBg(); // Re-pinta el fondo inmediatamente
+            history = [];
+            status.innerText = "LIENZO PURGADO";
+            setTimeout(() => status.innerText = "ESTADO: LISTO", 1000);
+        }
+
+        // --- VOZ Y TEXTO (CORREGIDO) ---
+        function handleVoiceInput() {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            
+            if (SpeechRecognition) {
+                const recognition = new SpeechRecognition();
+                recognition.lang = 'es-ES';
+                status.innerText = "ESCUCHANDO...";
+                
+                recognition.onresult = (e) => {
+                    drawNeonText(e.results[0][0].transcript);
+                    status.innerText = "ESTADO: LISTO";
+                };
+                
+                recognition.onerror = () => {
+                    status.innerText = "VOZ NO DISPONIBLE";
+                    fallbackTextInput();
+                };
+                
+                recognition.start();
+            } else {
+                fallbackTextInput();
+            }
+        }
+
+        function fallbackTextInput() {
+            const text = prompt("Escribe tu nota (Voz no soportada):");
+            if(text) drawNeonText(text);
+        }
+
+        function drawNeonText(text) {
+            ctx.font = `bold ${lineWidth.value * 5}px 'Orbitron'`;
+            ctx.fillStyle = colorPicker.value;
+            ctx.shadowBlur = 15;
+            ctx.shadowColor = colorPicker.value;
+            ctx.textAlign = "center";
+            ctx.fillText(text.toUpperCase(), (canvas.width/window.devicePixelRatio)/2, (canvas.height/window.devicePixelRatio)/2);
+            saveHistory();
+        }
+
+        // --- LOGICA DIBUJO ---
+        function getPos(e) {
+            const rect = canvas.getBoundingClientRect();
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+            return { x: clientX - rect.left, y: clientY - rect.top };
         }
 
         function setTool(tool) {
@@ -224,51 +288,27 @@
             document.getElementById('btn-' + (tool === 'eraser' ? 'eraser' : tool))?.classList.add('active');
         }
 
+        function toggleBg() {
+            isDarkBg = !isDarkBg;
+            const currentImg = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            fillBg();
+            ctx.putImageData(currentImg, 0, 0);
+        }
+
         function toggleMirror() {
             isMirror = !isMirror;
             document.getElementById('btn-mirror').classList.toggle('active');
-        }
-
-        // --- API DE VOZ ---
-        function startVoiceRecognition() {
-            const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-            recognition.lang = 'es-ES';
-            document.getElementById('status').innerText = "ESCUCHANDO...";
-            
-            recognition.onresult = (event) => {
-                const text = event.results[0][0].transcript;
-                drawText(text);
-                document.getElementById('status').innerText = "SISTEMA ONLINE";
-            };
-            recognition.start();
-        }
-
-        function drawText(text) {
-            ctx.font = `bold ${lineWidth.value * 5}px 'Orbitron'`;
-            ctx.fillStyle = colorPicker.value;
-            ctx.shadowBlur = 15;
-            ctx.shadowColor = colorPicker.value;
-            ctx.textAlign = "center";
-            ctx.fillText(text.toUpperCase(), canvas.width/4, canvas.height/4);
-            saveHistory();
-        }
-
-        // --- DIBUJO ---
-        function getPos(e) {
-            const rect = canvas.getBoundingClientRect();
-            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-            return { x: clientX - rect.left, y: clientY - rect.top };
         }
 
         function startDrawing(e) {
             drawing = true;
             startPos = getPos(e);
             snapshot = ctx.getImageData(0, 0, canvas.width, canvas.height);
-            
             if(currentTool === 'sticker') {
                 drawSticker(startPos.x, startPos.y);
                 drawing = false;
+                saveHistory();
                 return;
             }
             ctx.beginPath();
@@ -279,14 +319,13 @@
         function draw(e) {
             if (!drawing) return;
             const pos = getPos(e);
-            
             ctx.globalCompositeOperation = (currentTool === 'eraser') ? 'destination-out' : 'source-over';
             ctx.lineWidth = lineWidth.value;
             ctx.strokeStyle = colorPicker.value;
-            ctx.shadowBlur = (currentTool !== 'eraser') ? 12 : 0;
+            ctx.shadowBlur = (currentTool !== 'eraser') ? 10 : 0;
             ctx.shadowColor = colorPicker.value;
 
-            const render = (x, y, sx, sy) => {
+            const execute = (x, y, sx, sy) => {
                 if(currentTool === 'pen' || currentTool === 'eraser') {
                     ctx.lineTo(x, y);
                     ctx.stroke();
@@ -302,41 +341,17 @@
                 }
             };
 
-            render(pos.x, pos.y, startPos.x, startPos.y);
+            execute(pos.x, pos.y, startPos.x, startPos.y);
             if(isMirror) {
-                const mx = (canvas.width/2) - pos.x + (canvas.width/2); // Simetría simple
-                const msx = (canvas.width/2) - startPos.x + (canvas.width/2);
-                render(mx/2, pos.y, msx/2, startPos.y);
+                const cw = canvas.width / window.devicePixelRatio;
+                execute(cw - pos.x, pos.y, cw - startPos.x, startPos.y);
             }
         }
 
         function saveHistory() {
             history.push(ctx.getImageData(0, 0, canvas.width, canvas.height));
-            if(history.length > 25) history.shift();
+            if(history.length > 20) history.shift();
         }
-
-        function stopDrawing() {
-            if(drawing) saveHistory();
-            drawing = false;
-        }
-
-        // --- TRASH FIX ---
-        function clearCanvas() {
-            // Limpia todo el área de píxeles
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            // Vuelve a pintar el fondo inmediatamente para que el usuario no vea el cambio
-            fillBg();
-            history = [];
-            document.getElementById('status').innerText = "MEMORIA PURGADA";
-            setTimeout(() => document.getElementById('status').innerText = "SISTEMA ONLINE", 1000);
-        }
-
-        canvas.addEventListener('mousedown', startDrawing);
-        canvas.addEventListener('mousemove', draw);
-        window.addEventListener('mouseup', stopDrawing);
-        canvas.addEventListener('touchstart', startDrawing, {passive: false});
-        canvas.addEventListener('touchmove', draw, {passive: false});
-        canvas.addEventListener('touchend', stopDrawing);
 
         function undo() {
             if (history.length > 1) {
@@ -345,25 +360,25 @@
             } else { clearCanvas(); }
         }
 
-        async function handleExport() {
-            const exportCanvas = document.createElement('canvas');
-            exportCanvas.width = canvas.width;
-            exportCanvas.height = canvas.height;
-            const eCtx = exportCanvas.getContext('2d');
-            eCtx.fillStyle = isDarkBg ? "#000" : "#fff";
-            eCtx.fillRect(0, 0, exportCanvas.width, exportCanvas.height);
-            eCtx.drawImage(canvas, 0, 0);
-            const link = document.createElement('a');
-            link.download = 'jetzibeth-masterpiece.png';
-            link.href = exportCanvas.toDataURL();
-            link.click();
+        function stopDrawing() {
+            if(drawing) saveHistory();
+            drawing = false;
         }
 
+        // EVENTOS
+        canvas.addEventListener('mousedown', startDrawing);
+        canvas.addEventListener('mousemove', draw);
+        window.addEventListener('mouseup', stopDrawing);
+        canvas.addEventListener('touchstart', startDrawing, {passive: false});
+        canvas.addEventListener('touchmove', draw, {passive: false});
+        canvas.addEventListener('touchend', stopDrawing);
+
+        // STICKERS
         function toggleStickers(e) {
             const menu = document.getElementById('sticker-menu');
             menu.style.display = menu.style.display === 'grid' ? 'none' : 'grid';
             menu.style.left = e.pageX + 'px';
-            menu.style.top = (e.pageY - 100) + 'px';
+            menu.style.top = (e.pageY - 120) + 'px';
         }
 
         function selectSticker(icon) {
@@ -378,6 +393,20 @@
             ctx.fillStyle = colorPicker.value;
             const chars = {'fa-google': '\uf1a0', 'fa-github': '\uf09b', 'fa-react': '\uf41b', 'fa-android': '\uf17b'};
             ctx.fillText(chars[selectedSticker], x, y);
+        }
+
+        async function handleExport() {
+            const fCanvas = document.createElement('canvas');
+            fCanvas.width = canvas.width; fCanvas.height = canvas.height;
+            const fCtx = fCanvas.getContext('2d');
+            fCtx.fillStyle = isDarkBg ? "#000" : "#fff";
+            fCtx.fillRect(0, 0, fCanvas.width, fCanvas.height);
+            fCtx.drawImage(canvas, 0, 0);
+            
+            const link = document.createElement('a');
+            link.download = 'jetzibeth-art.png';
+            link.href = fCanvas.toDataURL();
+            link.click();
         }
     </script>
 </body>
