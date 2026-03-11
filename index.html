@@ -2,207 +2,302 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Pizarrón Pro Mobile</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Signature Designer Ultra Pro</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         :root {
-            --bg-color: #121212;
-            --panel-color: #1e1e1e;
-            --accent-color: #00e676;
-            --text-color: #e0e0e0;
+            --primary: #00f2ff;
+            --secondary: #7000ff;
+            --bg: #050505;
+            --glass: rgba(255, 255, 255, 0.05);
         }
 
         body {
             margin: 0;
-            padding: 0;
-            font-family: sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            overflow: hidden; 
-            display: flex;
-            flex-direction: column;
             height: 100vh;
-            /* Evita que el navegador recargue al deslizar hacia abajo */
-            overscroll-behavior-y: contain;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #000;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            overflow: hidden;
+            color: white;
+            position: fixed;
+            width: 100%;
         }
 
+        /* Fondo de cuadrícula animado */
+        .grid-bg {
+            position: absolute;
+            inset: 0;
+            background-image: 
+                linear-gradient(rgba(0, 242, 255, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 242, 255, 0.05) 1px, transparent 1px);
+            background-size: 30px 30px;
+            z-index: -1;
+        }
+
+        .main-container {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 28px;
+            padding: 15px;
+            box-shadow: 0 0 40px rgba(0,0,0,0.8);
+            width: 95vw;
+            max-width: 900px;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+
+        /* Toolbar de Herramientas Lateral/Superior */
         .toolbar {
-            background-color: var(--panel-color);
-            padding: 8px;
             display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
             gap: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.5);
-            z-index: 10;
+            margin-bottom: 15px;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
         }
 
         .tool-group {
             display: flex;
-            align-items: center;
-            gap: 5px;
-            font-size: 14px;
+            background: rgba(0,0,0,0.4);
+            padding: 5px;
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.1);
         }
 
-        canvas {
-            display: block;
-            background-color: #ffffff;
-            /* CRUCIAL: Evita que el toque haga scroll en el canvas */
-            touch-action: none; 
-            cursor: crosshair;
-        }
-
-        button {
-            background-color: #333;
-            color: white;
+        .tool-btn {
+            background: transparent;
             border: none;
-            padding: 8px 12px;
-            border-radius: 4px;
+            color: #666;
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
             cursor: pointer;
+            transition: 0.3s;
+            display: grid;
+            place-items: center;
+        }
+
+        .tool-btn.active {
+            color: var(--primary);
+            background: rgba(0, 242, 255, 0.1);
+            box-shadow: 0 0 10px rgba(0, 242, 255, 0.2);
+        }
+
+        #signature-pad {
+            background: #000;
+            border-radius: 18px;
+            cursor: crosshair;
+            width: 100%;
+            height: 450px;
+            border: 1px solid rgba(255,255,255,0.05);
+            touch-action: none;
+        }
+
+        .action-btns { display: flex; gap: 8px; }
+
+        .btn {
+            border: none;
+            padding: 10px 18px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 8px;
             font-size: 12px;
+            text-transform: uppercase;
         }
 
-        button.active {
-            background-color: var(--accent-color);
-            color: #000;
-        }
+        .btn-clear { background: #221111; color: #ff4747; }
+        .btn-undo { background: #111; color: #eee; }
+        .btn-save { background: linear-gradient(45deg, var(--primary), var(--secondary)); color: white; }
 
-        #canvas-container {
-            flex-grow: 1;
-        }
+        .config-item { display: flex; align-items: center; gap: 10px; font-size: 11px; font-weight: bold; color: var(--primary); }
+        
+        input[type="color"] { width: 25px; height: 25px; border: none; background: none; cursor: pointer; }
     </style>
 </head>
 <body>
 
-    <div class="toolbar">
-        <div class="tool-group">
-            <input type="color" id="colorPicker" value="#000000">
+    <div class="grid-bg" id="grid"></div>
+
+    <div class="main-container">
+        <div class="toolbar">
+            <div class="tool-group">
+                <button class="tool-btn active" onclick="setTool('pen')" id="btn-pen" title="Lápiz"><i class="fas fa-pen"></i></button>
+                <button class="tool-btn" onclick="setTool('line')" id="btn-line" title="Línea"><i class="fas fa-slash"></i></button>
+                <button class="tool-btn" onclick="setTool('rect')" id="btn-rect" title="Rectángulo"><i class="fas fa-vector-square"></i></button>
+                <button class="tool-btn" onclick="setTool('circle')" id="btn-circle" title="Círculo"><i class="fas fa-circle"></i></button>
+            </div>
+
+            <div class="tool-group">
+                <div class="config-item">
+                    <input type="color" id="colorPicker" value="#00f2ff" onchange="updateGrid()">
+                    <input type="range" id="lineWidth" min="1" max="15" value="3" style="width: 60px;">
+                </div>
+            </div>
+            
+            <div class="action-btns">
+                <button class="btn btn-undo" onclick="undo()" title="Deshacer"><i class="fas fa-undo"></i></button>
+                <button class="btn btn-clear" onclick="clearCanvas()"><i class="fas fa-trash"></i></button>
+                <button class="btn btn-save" onclick="handleExport()"><i class="fas fa-share-nodes"></i> Guardar</button>
+            </div>
         </div>
+
+        <canvas id="signature-pad"></canvas>
         
-        <div class="tool-group">
-            <input type="range" id="lineWidth" min="1" max="40" value="5">
-        </div>
-
-        <div class="tool-group">
-            <button id="drawBtn" class="active">Lápiz</button>
-            <button id="eraserBtn">Borrador</button>
-            <button id="clearBtn" style="background:#ff5252">Limpiar</button>
-            <button id="saveBtn" style="background:#2979ff">Guardar</button>
-        </div>
-    </div>
-
-    <div id="canvas-container">
-        <canvas id="whiteboard"></canvas>
+        <p style="text-align: center; font-size: 9px; opacity: 0.5; margin-top: 10px; letter-spacing: 3px;">
+            <i class="fas fa-shield-halved"></i> DESIGN INTERFACE v3.0 // VECTORIAL ENGINE ACTIVE
+        </p>
     </div>
 
     <script>
-        const canvas = document.getElementById('whiteboard');
-        const ctx = canvas.getContext('2d', { desynchronized: true });
+        const canvas = document.getElementById('signature-pad');
+        const ctx = canvas.getContext('2d');
         const colorPicker = document.getElementById('colorPicker');
-        const lineWidthInput = document.getElementById('lineWidth');
-        const clearBtn = document.getElementById('clearBtn');
-        const eraserBtn = document.getElementById('eraserBtn');
-        const drawBtn = document.getElementById('drawBtn');
-        const saveBtn = document.getElementById('saveBtn');
-
-        let painting = false;
-        let isEraser = false;
+        const lineWidth = document.getElementById('lineWidth');
+        
+        let drawing = false;
+        let currentTool = 'pen';
+        let startPos = { x: 0, y: 0 };
+        let history = [];
+        let snapshot = null; // Para previsualizar figuras
 
         function resizeCanvas() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight - document.querySelector('.toolbar').offsetHeight;
-            ctx.fillStyle = "#ffffff";
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            const rect = canvas.getBoundingClientRect();
+            const ratio = window.devicePixelRatio || 1;
+            canvas.width = rect.width * ratio;
+            canvas.height = rect.height * ratio;
+            ctx.scale(ratio, ratio);
             ctx.lineCap = 'round';
             ctx.lineJoin = 'round';
+            if(history.length > 0) redrawHistory();
         }
 
         window.addEventListener('resize', resizeCanvas);
         resizeCanvas();
 
-        // Función unificada para obtener coordenadas (Mouse o Touch)
+        function setTool(tool) {
+            currentTool = tool;
+            document.querySelectorAll('.tool-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`btn-${tool}`).classList.add('active');
+        }
+
         function getPos(e) {
             const rect = canvas.getBoundingClientRect();
-            // Si es touch, usamos el primer dedo; si no, el mouse
             const clientX = e.touches ? e.touches[0].clientX : e.clientX;
             const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+            return { x: clientX - rect.left, y: clientY - rect.top };
+        }
+
+        function startDrawing(e) {
+            drawing = true;
+            startPos = getPos(e);
+            // Guardar estado actual para previsualización
+            snapshot = ctx.getImageData(0, 0, canvas.width, canvas.height);
             
-            return {
-                x: clientX - rect.left,
-                y: clientY - rect.top
-            };
-        }
-
-        function startPosition(e) {
-            painting = true;
-            const pos = getPos(e);
-            ctx.beginPath();
-            ctx.moveTo(pos.x, pos.y);
-            // Dibujar un punto inicial
-            draw(e);
-        }
-
-        function finishedPosition() {
-            painting = false;
-            ctx.beginPath();
+            if(currentTool === 'pen') {
+                ctx.beginPath();
+                ctx.moveTo(startPos.x, startPos.y);
+            }
+            e.preventDefault();
         }
 
         function draw(e) {
-            if (!painting) return;
-            // Previene scroll accidental en móviles
-            if (e.cancelable) e.preventDefault(); 
+            if (!drawing) return;
+            const currentPos = getPos(e);
+            
+            // Estilo global
+            ctx.lineWidth = lineWidth.value;
+            ctx.strokeStyle = colorPicker.value;
+            ctx.shadowBlur = 10;
+            ctx.shadowColor = colorPicker.value;
 
-            const pos = getPos(e);
-
-            ctx.lineWidth = lineWidthInput.value;
-            ctx.strokeStyle = isEraser ? '#ffffff' : colorPicker.value;
-
-            ctx.lineTo(pos.x, pos.y);
-            ctx.stroke();
-            ctx.moveTo(pos.x, pos.y);
+            if (currentTool === 'pen') {
+                ctx.lineTo(currentPos.x, currentPos.y);
+                ctx.stroke();
+            } else {
+                // Para figuras, restauramos el canvas y dibujamos la "nueva" versión
+                ctx.putImageData(snapshot, 0, 0);
+                ctx.beginPath();
+                
+                if (currentTool === 'line') {
+                    ctx.moveTo(startPos.x, startPos.y);
+                    ctx.lineTo(currentPos.x, currentPos.y);
+                } 
+                else if (currentTool === 'rect') {
+                    ctx.strokeRect(startPos.x, startPos.y, currentPos.x - startPos.x, currentPos.y - startPos.y);
+                } 
+                else if (currentTool === 'circle') {
+                    const radius = Math.sqrt(Math.pow(currentPos.x - startPos.x, 2) + Math.pow(currentPos.y - startPos.y, 2));
+                    ctx.arc(startPos.x, startPos.y, radius, 0, Math.PI * 2);
+                }
+                ctx.stroke();
+            }
+            e.preventDefault();
         }
 
-        // --- Eventos de Mouse ---
-        canvas.addEventListener('mousedown', startPosition);
-        canvas.addEventListener('mousemove', draw);
-        window.addEventListener('mouseup', finishedPosition);
-
-        // --- Eventos de Touch (Móvil) ---
-        canvas.addEventListener('touchstart', (e) => {
-            startPosition(e);
-        }, { passive: false });
-
-        canvas.addEventListener('touchmove', (e) => {
-            draw(e);
-        }, { passive: false });
-
-        canvas.addEventListener('touchend', finishedPosition);
-
-        // --- Herramientas ---
-        eraserBtn.onclick = () => {
-            isEraser = true;
-            eraserBtn.classList.add('active');
-            drawBtn.classList.remove('active');
-        };
-
-        drawBtn.onclick = () => {
-            isEraser = false;
-            drawBtn.classList.add('active');
-            eraserBtn.classList.remove('active');
-        };
-
-        clearBtn.onclick = () => {
-            if(confirm("¿Borrar todo?")) {
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
+        function stopDrawing() {
+            if(drawing) {
+                // Guardar en el historial para el Undo
+                history.push(ctx.getImageData(0, 0, canvas.width, canvas.height));
+                if(history.length > 20) history.shift();
             }
-        };
+            drawing = false;
+        }
 
-        saveBtn.onclick = () => {
-            const link = document.createElement('a');
-            link.download = 'sketch.png';
-            link.href = canvas.toDataURL();
-            link.click();
-        };
+        // Eventos
+        canvas.addEventListener('mousedown', startDrawing);
+        canvas.addEventListener('mousemove', draw);
+        window.addEventListener('mouseup', stopDrawing);
+        canvas.addEventListener('touchstart', startDrawing, {passive: false});
+        canvas.addEventListener('touchmove', draw, {passive: false});
+        canvas.addEventListener('touchend', stopDrawing);
+
+        function undo() {
+            if (history.length > 0) {
+                history.pop(); // Sacar el actual
+                if (history.length === 0) {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                } else {
+                    ctx.putImageData(history[history.length - 1], 0, 0);
+                }
+            }
+        }
+
+        function clearCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            history = [];
+        }
+
+        function updateGrid() {
+            const grid = document.getElementById('grid');
+            grid.style.backgroundImage = `
+                linear-gradient(${colorPicker.value}11 1px, transparent 1px),
+                linear-gradient(90deg, ${colorPicker.value}11 1px, transparent 1px)
+            `;
+        }
+
+        async function handleExport() {
+            const dataUrl = canvas.toDataURL('image/png');
+            if (navigator.share) {
+                const blob = await (await fetch(dataUrl)).blob();
+                const file = new File([blob], 'design.png', { type: 'image/png' });
+                navigator.share({ files: [file], title: 'Mi Diseño Elite' }).catch(() => {});
+            } else {
+                const link = document.createElement('a');
+                link.download = 'design-pro.png';
+                link.href = dataUrl;
+                link.click();
+            }
+        }
     </script>
 </body>
 </html>
