@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Jetzibeth Designer Pro</title>
+    <title>Jetzibeth Design
+</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         :root {
@@ -39,23 +40,20 @@
 
         .main-container {
             background: var(--glass);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
             border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 28px;
             padding: 15px;
-            box-shadow: 0 0 40px rgba(0,0,0,0.8);
+            box-shadow: 0 0 50px rgba(0, 242, 255, 0.1);
             width: 95vw;
-            max-width: 900px;
-            animation: fadeIn 0.5s ease-out;
+            max-width: 950px;
         }
-
-        @keyframes fadeIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
 
         .toolbar {
             display: flex;
-            gap: 10px;
-            margin-bottom: 15px;
+            gap: 8px;
+            margin-bottom: 12px;
             justify-content: space-between;
             align-items: center;
             flex-wrap: wrap;
@@ -63,64 +61,75 @@
 
         .tool-group {
             display: flex;
-            background: rgba(0,0,0,0.4);
-            padding: 5px;
-            border-radius: 12px;
+            background: rgba(0,0,0,0.5);
+            padding: 4px;
+            border-radius: 14px;
             border: 1px solid rgba(255,255,255,0.1);
             align-items: center;
-            gap: 5px;
+            gap: 2px;
         }
 
         .tool-btn {
             background: transparent;
             border: none;
-            color: #666;
-            width: 40px;
-            height: 40px;
-            border-radius: 8px;
+            color: #888;
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
             cursor: pointer;
-            transition: 0.3s;
+            transition: 0.2s;
             display: grid;
             place-items: center;
+            font-size: 16px;
         }
 
         .tool-btn.active {
             color: var(--primary);
-            background: rgba(0, 242, 255, 0.1);
-            box-shadow: 0 0 10px rgba(0, 242, 255, 0.2);
+            background: rgba(0, 242, 255, 0.15);
+            box-shadow: 0 0 15px rgba(0, 242, 255, 0.3);
         }
 
         #signature-pad {
-            background: #000; /* Fondo visual inicial */
-            border-radius: 18px;
+            background: #000;
+            border-radius: 20px;
             cursor: crosshair;
             width: 100%;
-            height: 450px;
-            border: 1px solid rgba(255,255,255,0.05);
+            height: 50vh;
+            border: 1px solid rgba(255,255,255,0.08);
             touch-action: none;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
         }
-
-        .action-btns { display: flex; gap: 8px; }
 
         .btn {
             border: none;
-            padding: 10px 18px;
+            padding: 10px 16px;
             border-radius: 10px;
             cursor: pointer;
             font-weight: bold;
             display: flex;
             align-items: center;
             gap: 8px;
-            font-size: 12px;
+            font-size: 11px;
             text-transform: uppercase;
+            transition: 0.3s;
         }
 
-        .btn-clear { background: #221111; color: #ff4747; }
-        .btn-undo { background: #111; color: #eee; }
-        .btn-save { background: linear-gradient(45deg, var(--primary), var(--secondary)); color: white; }
+        .btn-save { background: linear-gradient(45deg, var(--primary), var(--secondary)); color: white; box-shadow: 0 4px 15px rgba(0, 242, 255, 0.3); }
+        .btn-save:active { transform: scale(0.95); }
 
-        .config-item { display: flex; align-items: center; gap: 10px; font-size: 11px; font-weight: bold; color: var(--primary); }
-        input[type="color"] { width: 25px; height: 25px; border: none; background: none; cursor: pointer; }
+        /* Menú de Stickers Flotante */
+        #sticker-menu {
+            display: none;
+            position: absolute;
+            background: rgba(10, 10, 10, 0.95);
+            border: 1px solid var(--primary);
+            padding: 10px;
+            border-radius: 15px;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            z-index: 100;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+        }
     </style>
 </head>
 <body>
@@ -130,33 +139,43 @@
     <div class="main-container">
         <div class="toolbar">
             <div class="tool-group">
-                <button class="tool-btn active" onclick="setTool('pen')" id="btn-pen" title="Lápiz"><i class="fas fa-pen"></i></button>
-                <button class="tool-btn" onclick="setTool('line')" id="btn-line" title="Línea"><i class="fas fa-slash"></i></button>
-                <button class="tool-btn" onclick="setTool('rect')" id="btn-rect" title="Rectángulo"><i class="fas fa-vector-square"></i></button>
-                <button class="tool-btn" onclick="setTool('circle')" id="btn-circle" title="Círculo"><i class="fas fa-circle"></i></button>
+                <button class="tool-btn active" onclick="setTool('pen')" id="btn-pen" title="Lápiz"><i class="fas fa-pen-nib"></i></button>
+                <button class="tool-btn" onclick="setTool('eraser')" id="btn-eraser" title="Borrador"><i class="fas fa-eraser"></i></button>
+                <button class="tool-btn" onclick="setTool('line')" id="btn-line"><i class="fas fa-slash"></i></button>
+                <button class="tool-btn" onclick="setTool('rect')" id="btn-rect"><i class="fas fa-vector-square"></i></button>
+                <button class="tool-btn" onclick="setTool('circle')" id="btn-circle"><i class="fas fa-circle"></i></button>
+                <button class="tool-btn" onclick="toggleStickers(event)" id="btn-sticker" title="Stickers de APIs"><i class="fas fa-icons"></i></button>
             </div>
 
             <div class="tool-group">
-                <div class="config-item">
-                    <button class="tool-btn" onclick="toggleBg()" id="btn-bg" title="Cambiar Fondo" style="color: #fff;">
-                        <i class="fas fa-fill-drip"></i>
-                    </button>
-                    <input type="color" id="colorPicker" value="#00f2ff" onchange="updateGrid()">
-                    <input type="range" id="lineWidth" min="1" max="15" value="3" style="width: 60px;">
-                </div>
+                <button class="tool-btn" onclick="toggleBg()" id="btn-bg" style="color: #fff;"><i class="fas fa-eye-dropper"></i></button>
+                <button class="tool-btn" onclick="toggleNeon()" id="btn-neon" style="color: var(--primary);"><i class="fas fa-bolt"></i></button>
+                <input type="color" id="colorPicker" value="#00f2ff" onchange="updateGrid()" style="width:25px; border:none; background:none;">
+                <input type="range" id="lineWidth" min="1" max="25" value="3" style="width: 50px;">
             </div>
             
-            <div class="action-btns">
-                <button class="btn btn-undo" onclick="undo()" title="Deshacer"><i class="fas fa-undo"></i></button>
-                <button class="btn btn-clear" onclick="clearCanvas()"><i class="fas fa-trash"></i></button>
-                <button class="btn btn-save" onclick="handleExport()"><i class="fas fa-share-nodes"></i> Guardar</button>
+            <div class="action-btns" style="display:flex; gap:5px;">
+                <button class="btn" style="background:#111; color:#fff;" onclick="undo()"><i class="fas fa-undo"></i></button>
+                <button class="btn" style="background:#221111; color:#ff4747;" onclick="clearCanvas()"><i class="fas fa-trash"></i></button>
+                <button class="btn btn-save" onclick="handleExport()"><i class="fas fa-cloud-arrow-down"></i> Exportar</button>
             </div>
         </div>
 
         <canvas id="signature-pad"></canvas>
+
+        <div id="sticker-menu">
+            <button class="tool-btn" onclick="selectSticker('fa-google')"><i class="fab fa-google"></i></button>
+            <button class="tool-btn" onclick="selectSticker('fa-github')"><i class="fab fa-github"></i></button>
+            <button class="tool-btn" onclick="selectSticker('fa-android')"><i class="fab fa-android"></i></button>
+            <button class="tool-btn" onclick="selectSticker('fa-apple')"><i class="fab fa-apple"></i></button>
+            <button class="tool-btn" onclick="selectSticker('fa-whatsapp')"><i class="fab fa-whatsapp"></i></button>
+            <button class="tool-btn" onclick="selectSticker('fa-react')"><i class="fab fa-react"></i></button>
+            <button class="tool-btn" onclick="selectSticker('fa-python')"><i class="fab fa-python"></i></button>
+            <button class="tool-btn" onclick="selectSticker('fa-java')"><i class="fab fa-java"></i></button>
+        </div>
         
-        <p style="text-align: center; font-size: 9px; opacity: 0.5; margin-top: 10px; letter-spacing: 3px;">
-            <i class="fas fa-shield-halved"></i> JETZIBETH ENGINE v3.5 // BACKGROUND PERSISTENCE ENABLED
+        <p style="text-align: center; font-size: 10px; opacity: 0.6; margin-top: 10px; letter-spacing: 2px;">
+            JETZIBETH MULTI-TOOL OS // NEON-API READY
         </p>
     </div>
 
@@ -165,54 +184,46 @@
         const ctx = canvas.getContext('2d', { willReadFrequently: true });
         const colorPicker = document.getElementById('colorPicker');
         const lineWidth = document.getElementById('lineWidth');
+        const stickerMenu = document.getElementById('sticker-menu');
         
         let drawing = false;
         let currentTool = 'pen';
-        let startPos = { x: 0, y: 0 };
+        let isDarkBg = true;
+        let isNeon = true;
         let history = [];
+        let startPos = { x: 0, y: 0 };
         let snapshot = null;
-        let isDarkBg = true; // Estado del fondo
+        let selectedSticker = null;
 
-        function fillBackground() {
-            // Guardar el estado actual del contexto
-            ctx.save();
-            ctx.globalCompositeOperation = 'destination-over'; // Dibujar detrás de lo existente
+        function fillInitialBg() {
             ctx.fillStyle = isDarkBg ? "#000000" : "#ffffff";
             ctx.fillRect(0, 0, canvas.width, canvas.height);
-            ctx.restore();
-            
-            // Actualizar vista visual
             canvas.style.background = isDarkBg ? "#000" : "#fff";
         }
 
         function toggleBg() {
             isDarkBg = !isDarkBg;
-            fillBackground();
-            saveToHistory(); // Guardar el cambio de fondo
+            // Capturamos el dibujo sin el fondo actual
+            const currentImg = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            fillInitialBg();
+            ctx.putImageData(currentImg, 0, 0);
+            saveHistory();
+        }
+
+        function toggleNeon() {
+            isNeon = !isNeon;
+            document.getElementById('btn-neon').style.opacity = isNeon ? "1" : "0.3";
         }
 
         function resizeCanvas() {
             const rect = canvas.getBoundingClientRect();
             const ratio = window.devicePixelRatio || 1;
-            
-            // Si ya hay dibujo, guardarlo antes de redimensionar
-            const tempImage = canvas.toDataURL();
-
             canvas.width = rect.width * ratio;
             canvas.height = rect.height * ratio;
             ctx.scale(ratio, ratio);
-            
             ctx.lineCap = 'round';
             ctx.lineJoin = 'round';
-            
-            fillBackground(); // Pintar el fondo elegido
-            
-            // Recargar dibujo si existía
-            if (history.length > 0) {
-                const img = new Image();
-                img.src = tempImage;
-                img.onload = () => ctx.drawImage(img, 0, 0, rect.width, rect.height);
-            }
+            fillInitialBg();
         }
 
         window.addEventListener('resize', resizeCanvas);
@@ -220,8 +231,21 @@
 
         function setTool(tool) {
             currentTool = tool;
-            document.querySelectorAll('.tool-btn').forEach(btn => btn.classList.remove('active'));
-            document.getElementById(`btn-${tool}`).classList.add('active');
+            document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('btn-' + (tool === 'eraser' ? 'eraser' : tool))?.classList.add('active');
+            stickerMenu.style.display = 'none';
+        }
+
+        function toggleStickers(e) {
+            stickerMenu.style.display = stickerMenu.style.display === 'grid' ? 'none' : 'grid';
+            stickerMenu.style.left = e.pageX + 'px';
+            stickerMenu.style.top = (e.pageY - 100) + 'px';
+        }
+
+        function selectSticker(iconClass) {
+            selectedSticker = iconClass;
+            setTool('sticker');
+            stickerMenu.style.display = 'none';
         }
 
         function getPos(e) {
@@ -236,7 +260,14 @@
             startPos = getPos(e);
             snapshot = ctx.getImageData(0, 0, canvas.width, canvas.height);
             
-            if(currentTool === 'pen') {
+            if(currentTool === 'sticker') {
+                drawSticker(startPos.x, startPos.y);
+                drawing = false;
+                saveHistory();
+                return;
+            }
+
+            if(currentTool === 'pen' || currentTool === 'eraser') {
                 ctx.beginPath();
                 ctx.moveTo(startPos.x, startPos.y);
             }
@@ -245,45 +276,59 @@
 
         function draw(e) {
             if (!drawing) return;
-            const currentPos = getPos(e);
+            const pos = getPos(e);
             
             ctx.lineWidth = lineWidth.value;
-            ctx.strokeStyle = colorPicker.value;
-            ctx.shadowBlur = (currentTool === 'pen') ? 10 : 0; // Solo glow en lápiz para no saturar figuras
-            ctx.shadowColor = colorPicker.value;
+            ctx.strokeStyle = currentTool === 'eraser' ? (isDarkBg ? "#000" : "#fff") : colorPicker.value;
+            
+            // Efecto Neon
+            if(isNeon && currentTool !== 'eraser') {
+                ctx.shadowBlur = 12;
+                ctx.shadowColor = colorPicker.value;
+            } else {
+                ctx.shadowBlur = 0;
+            }
 
-            if (currentTool === 'pen') {
-                ctx.lineTo(currentPos.x, currentPos.y);
+            if(currentTool === 'pen' || currentTool === 'eraser') {
+                ctx.lineTo(pos.x, pos.y);
                 ctx.stroke();
             } else {
                 ctx.putImageData(snapshot, 0, 0);
                 ctx.beginPath();
-                if (currentTool === 'line') {
+                if(currentTool === 'line') {
                     ctx.moveTo(startPos.x, startPos.y);
-                    ctx.lineTo(currentPos.x, currentPos.y);
-                } 
-                else if (currentTool === 'rect') {
-                    ctx.strokeRect(startPos.x, startPos.y, currentPos.x - startPos.x, currentPos.y - startPos.y);
-                } 
-                else if (currentTool === 'circle') {
-                    const radius = Math.sqrt(Math.pow(currentPos.x - startPos.x, 2) + Math.pow(currentPos.y - startPos.y, 2));
-                    ctx.arc(startPos.x, startPos.y, radius, 0, Math.PI * 2);
+                    ctx.lineTo(pos.x, pos.y);
+                } else if(currentTool === 'rect') {
+                    ctx.strokeRect(startPos.x, startPos.y, pos.x - startPos.x, pos.y - startPos.y);
+                } else if(currentTool === 'circle') {
+                    const r = Math.sqrt(Math.pow(pos.x-startPos.x,2)+Math.pow(pos.y-startPos.y,2));
+                    ctx.arc(startPos.x, startPos.y, r, 0, Math.PI*2);
                 }
                 ctx.stroke();
             }
-            e.preventDefault();
         }
 
-        function saveToHistory() {
+        function drawSticker(x, y) {
+            ctx.font = `${lineWidth.value * 5}px "Font Awesome 6 Brands"`;
+            ctx.fillStyle = colorPicker.value;
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+            // Usamos el charCode del icono según Font Awesome
+            const icons = {'fa-google': '\uf1a0', 'fa-github': '\uf09b', 'fa-android': '\uf17b', 'fa-apple': '\uf179', 'fa-whatsapp': '\uf232', 'fa-react': '\uf41b', 'fa-python': '\uf3e2', 'fa-java': '\uf4e4'};
+            ctx.fillText(icons[selectedSticker], x, y);
+        }
+
+        function saveHistory() {
             history.push(ctx.getImageData(0, 0, canvas.width, canvas.height));
-            if(history.length > 20) history.shift();
+            if(history.length > 25) history.shift();
         }
 
         function stopDrawing() {
-            if(drawing) saveToHistory();
+            if(drawing) saveHistory();
             drawing = false;
         }
 
+        // Eventos
         canvas.addEventListener('mousedown', startDrawing);
         canvas.addEventListener('mousemove', draw);
         window.addEventListener('mouseup', stopDrawing);
@@ -295,52 +340,36 @@
             if (history.length > 1) {
                 history.pop();
                 ctx.putImageData(history[history.length - 1], 0, 0);
-            } else if (history.length === 1) {
-                history.pop();
+            } else {
                 clearCanvas();
             }
         }
 
         function clearCanvas() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            fillBackground();
+            fillInitialBg();
             history = [];
         }
 
-        function updateGrid() {
-            const grid = document.getElementById('grid');
-            grid.style.backgroundImage = `
-                linear-gradient(${colorPicker.value}11 1px, transparent 1px),
-                linear-gradient(90deg, ${colorPicker.value}11 1px, transparent 1px)
-            `;
-        }
-
         async function handleExport() {
-            // Creamos un canvas temporal para asegurar que el fondo sea sólido en el archivo
-            const exportCanvas = document.createElement('canvas');
-            exportCanvas.width = canvas.width;
-            exportCanvas.height = canvas.height;
-            const eCtx = exportCanvas.getContext('2d');
-            
-            // 1. Pintar fondo sólido
-            eCtx.fillStyle = isDarkBg ? "#000000" : "#ffffff";
-            eCtx.fillRect(0, 0, exportCanvas.width, exportCanvas.height);
-            
-            // 2. Pintar el dibujo encima
-            eCtx.drawImage(canvas, 0, 0);
-            
-            const dataUrl = exportCanvas.toDataURL('image/png');
-            
+            const dataUrl = canvas.toDataURL('image/png');
             if (navigator.share) {
                 const blob = await (await fetch(dataUrl)).blob();
-                const file = new File([blob], 'firma_jetzibeth.png', { type: 'image/png' });
-                navigator.share({ files: [file], title: 'Mi Firma Pro' }).catch(() => {});
+                const file = new File([blob], 'jetzibeth_design.png', { type: 'image/png' });
+                navigator.share({ files: [file], title: 'Mi Diseño Galáctico' });
             } else {
                 const link = document.createElement('a');
-                link.download = 'firma_jetzibeth.png';
+                link.download = 'jetzibeth_design.png';
                 link.href = dataUrl;
                 link.click();
             }
+        }
+
+        function updateGrid() {
+            document.getElementById('grid').style.backgroundImage = `
+                linear-gradient(${colorPicker.value}11 1px, transparent 1px),
+                linear-gradient(90deg, ${colorPicker.value}11 1px, transparent 1px)
+            `;
         }
     </script>
 </body>
